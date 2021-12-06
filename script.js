@@ -76,8 +76,12 @@ function wordwrap() {
     wrapValue = document.getElementById("wrapLengthBox").value
     var text = document.getElementById("inputText").value
 
-    if (wrapValue == 0) {
+    if (wrapValue === 0) {
         return text.split("\n");
+    }
+
+    if (text.length === 0) {
+        text = document.getElementById("inputText").placeholder
     }
     
     var textSplit = text.split("\n")
