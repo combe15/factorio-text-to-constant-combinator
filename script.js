@@ -7,6 +7,11 @@ const conversionTable = {'A':"signal-A",'B':"signal-B",'C':"signal-C",'D':"signa
 function convertText() {
     let blueprintJSON = JSON.parse(JSON.stringify(blueprintTemplate))
     var text = document.getElementById("inputText").value;
+
+    if (text === '') {
+        text = document.getElementById("inputText").placeholder;
+    }
+
     console.log(text);
     for (let i = 0; i < text.length; i++) {
         currentEntity = JSON.parse(JSON.stringify(entityTemplate))
