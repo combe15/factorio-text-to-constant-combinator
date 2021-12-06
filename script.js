@@ -5,28 +5,26 @@ const entityTemplate = {"entity_number":1,"name":"constant-combinator","position
 const conversionTable = {'A':"signal-A",'B':"signal-B",'C':"signal-C",'D':"signal-D",'E':"signal-E",'F':"signal-F",'G':"signal-G",'H':"signal-H",'I':"signal-I",'J':"signal-J",'K':"signal-K",'L':"signal-L",'M':"signal-M",'N':"signal-N",'O':"signal-O",'P':"signal-P",'Q':"signal-Q",'R':"signal-R",'S':"signal-S",'T':"signal-T",'U':"signal-U",'V':"signal-V",'W':"signal-W",'X':"signal-X",'Y':"signal-Y",'Z':"signal-Z",'0':"signal-0",'1':"signal-1",'2':"signal-2",'3':"signal-3",'4':"signal-4",'5':"signal-5",'6':"signal-6",'7':"signal-7",'8':"signal-8",'9':"signal-9",'.':"signal-dot",'?':"signal-dot",'!':"signal-dot"};
 
 function convertText() {
+    var wordArray = wordwrap()
     let blueprintJSON = JSON.parse(JSON.stringify(blueprintTemplate))
-    var text = document.getElementById("inputText").value;
 
-    if (text === '') {
-        text = document.getElementById("inputText").placeholder;
-    }
-
-    console.log(text);
-    for (let i = 0; i < text.length; i++) {
-        currentEntity = JSON.parse(JSON.stringify(entityTemplate))
-        currentEntity.entity_number = i+1
-        currentEntity.position.x = i+0.5
-        if (text[i].toUpperCase() in conversionTable) {
-            currentEntity.control_behavior.filters[0].signal.name = conversionTable[text[i].toUpperCase()]
+    for (let row = 0; row < wordArray.length; row++) {
+        for (let column = 0; column < wordArray[row].length; column++) {
+            currentEntity = JSON.parse(JSON.stringify(entityTemplate))
+            currentEntity.entity_number = column+1
+            currentEntity.position.x = column+0.5
+            currentEntity.position.y = row+0.5
+            if (wordArray[row][column].toUpperCase() in conversionTable) {
+                currentEntity.control_behavior.filters[0].signal.name = conversionTable[wordArray[row][column].toUpperCase()]
+            }
+            else if (wordArray[row][column] === ' ') {
+                continue;
+            }
+            else {
+                delete currentEntity.control_behavior
+            }
+            blueprintJSON.blueprint["entities"].push(currentEntity)
         }
-        else if (text[i] === ' ') {
-            continue;
-        }
-        else {
-            delete currentEntity.control_behavior
-        }
-        blueprintJSON.blueprint["entities"].push(currentEntity)
     }
     compressJSON(blueprintJSON)
 }
@@ -64,4 +62,45 @@ function toBase64(buf) {
         return String.fromCharCode(ch);
     }).join('');
     return btoa(binaryString);
+}
+
+function syncLengthBox() {
+    document.getElementById("wrapLengthBox").value = document.getElementById("wrapLengthRange").value
+}
+
+function syncLengthRange() {
+    document.getElementById("wrapLengthRange").value = document.getElementById("wrapLengthBox").value
+}
+
+function wordwrap() {
+    wrapValue = document.getElementById("wrapLengthBox").value
+    var text = document.getElementById("inputText").value
+
+    if (wrapValue == 0) {
+        return text.split("\n");
+    }
+    
+    var textSplit = text.split("\n")
+    var textArray = []
+    var finalArray = [[]]
+    var rowCounter = 0
+    for (let i = 0; i < textSplit.length; i++){
+        textArray.push(textSplit[i].split(" "))
+    }
+    for (let arrayNum = 0; arrayNum < textArray.length; arrayNum++) {
+        for (let wordNum = 0; wordNum < textArray[arrayNum].length; wordNum++) {
+            finalArray[rowCounter] += textArray[arrayNum][wordNum] + " "
+            if (textArray[arrayNum][wordNum+1] === undefined) {
+                break
+            }
+            else if (finalArray[rowCounter].length + textArray[arrayNum][wordNum+1].length > wrapValue) {
+                rowCounter++
+                finalArray[rowCounter] = []
+            }
+        }
+        rowCounter++
+        finalArray[rowCounter] = []
+    }
+    console.log(finalArray)
+    return finalArray;
 }

@@ -29,6 +29,15 @@
                     <textarea class="form-control" id="inputText" rows="3" spellcheck="true"
                         placeholder="Did you ever hear the tragedy of Darth Plagueis The Wise?..."
                         style="margin-top: 0px; margin-bottom: 0px; height: 10em;"></textarea>
+                    <label for="wrapLength" class="form-label mt-4">Wrap Length</label>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" min="0" max ="160" step="1" value="80" id="wrapLengthRange" oninput="syncLengthBox()">
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control form-control-sm" min="0" step="1" type="number" value="80" id="wrapLengthBox" oninput="syncLengthRange()">
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-primary btn-lg" value="Convert Text"
                         onclick="convertText()">Convert Text</button>
                 </div>
